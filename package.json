@@ -1,0 +1,24 @@
+{
+  "name": "maze-generator-and-solver",
+  "version": "0.1.0",
+  "description": "Interactive maze generator and solver demonstrating core DSA concepts",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test",
+    "bench": "node scripts/benchmark_100x100.js"
+  },
+  "keywords": [
+    "maze",
+    "algorithms",
+    "dsa",
+    "pathfinding",
+    "canvas",
+    "visualization"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "three": "^0.186.1"
+  }
+}

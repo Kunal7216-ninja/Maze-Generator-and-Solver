@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="sheet">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maze Quest - Adventure & DSA Algorithms</title>
+  <meta name="description"
+    content="Explore procedural mazes, navigate fog of war, race algorithmic bots, and duel friends on one keyboard.">
+  <link rel="icon" type="image/jpeg" href="maze_quest_logo.jpg">
+  <link rel="apple-touch-icon" href="maze_quest_logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;800;900&family=Fraunces:opsz,wght@9..144,600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./src/lib/three.module.js"
+    }
+  }
+  </script>
+</head>
+
+<body>
+  <!-- Ambient Interactive Dynamic Maze Background (Reacts to Scroll & Parallax) -->
+  <canvas id="bg-maze-canvas" class="bg-maze-canvas" aria-hidden="true"></canvas>
+
+  <!-- Cinematic Portal Transition Flash Overlay (Triggered on ENTER THE WORLD) -->
+  <div id="portal-transition-overlay" class="portal-transition-overlay" aria-hidden="true" style="display: none;">
+    <div class="portal-surge-ring ring-1"></div>
+    <div class="portal-surge-ring ring-2"></div>
+    <div class="portal-surge-ring ring-3"></div>
+    <div class="portal-flash-core"></div>
+    <div class="portal-transition-hud">
+      <span class="portal-hud-rune">✦</span>
+      <span class="portal-hud-text">PASSING THROUGH THE GATEWAY...</span>
+      <span class="portal-hud-rune">✦</span>
+    </div>
+  </div>
+
+  <div class="field-terminal-root">
+    <!-- Masthead Navigation Bar -->
+    <header class="masthead">
+      <div class="masthead-brand" id="brand-home-btn" role="button" tabindex="0" title="Home">
+        <div class="brand-crest">
+          <img src="maze_quest_logo.jpg" alt="Maze Quest Project Logo" class="brand-logo-img" width="40" height="40">
+        </div>
+        <div class="brand-titles">
+          <h1 class="brand-title">MAZE QUEST</h1>
+          <p class="brand-subtitle">ADVENTURE & ALGORITHM ARENA</p>
+        </div>
+      </div>
+
+      <nav class="masthead-nav">
+        <button id="nav-landing" class="nav-tab active" type="button">GATEWAY</button>
+        <button id="nav-expedition" class="nav-tab" type="button">PLAY MAZE 🎮</button>
+        <button id="nav-campaign" class="nav-tab" type="button">QUEST MAP</button>
+      </nav>
+
+      <div class="masthead-telemetry">
+        <button id="btn-theme-cycle" class="btn-theme-toggle" type="button" title="Switch Color Theme">
+          <span id="theme-icon">🟡</span> <span id="theme-name">THEME</span>
+        </button>
+        <button id="btn-sound-toggle" class="btn-sound-toggle" type="button" title="Sound Toggle">
+          <span id="sound-icon">🔊</span> SOUND
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Viewport -->
+    <main class="viewport">
+      <!-- 0. SCREEN: LANDING PAGE -->
+      <section id="screen-landing" class="app-screen active">
+        <div class="fantasy-landing-wrapper">
+          <!-- SECTION 1: THE GATEWAY (Full-screen Cinematic Hero) -->
+          <section id="section-gateway" class="fantasy-hero-viewport" aria-label="The Gateway to the Maze">
+            <!-- 3D Cinematic Camera Flight Rig -->
+            <div id="gateway-camera-rig" class="gateway-camera-rig">
+              <!-- Background Layer with parallax positioning -->
+              <div class="fantasy-artwork-layer" aria-hidden="true">
+              <div class="fantasy-artwork-img"></div>
+              <div class="fantasy-stars-twinkle"></div>
+              <div class="fantasy-fog-band fog-band-1"></div>
+              <div class="fantasy-fog-band fog-band-2"></div>
+              <div class="fantasy-floating-particles">
+                <span class="particle p1">✦</span>
+                <span class="particle p2">·</span>
+                <span class="particle p3">✦</span>
+                <span class="particle p4">✧</span>
+                <span class="particle p5">·</span>
+                <span class="particle p6">✦</span>
+              </div>
+            </div>
+
+            <!-- Interactive Portal Hotspot over the right-side portal arch -->
+            <div id="portal-hotspot" class="portal-hotspot" role="button" tabindex="0"
+              title="Click to enter the portal">
+              <div class="portal-swirl-aura"></div>
+              <div class="portal-energy-ring"></div>
+              <div class="portal-core-glow"></div>
+              <div class="portal-rune-emblem">✦</div>
+              <span class="portal-hover-hint">CLICK TO ENTER</span>
+            </div>
+
+            <!-- Dark Gradient & Vignette Overlay behind hero content -->
+            <div class="fantasy-vignette-overlay" aria-hidden="true"></div>
+
+            <!-- Left-aligned Hero Content -->
+            <div class="fantasy-hero-container">
+              <div class="fantasy-hero-content">
+                <div class="fantasy-eyebrow-badge">
+                  <span class="badge-gem">◆</span>
+                  <span class="badge-text">THE LOST REALM AWAITS</span>
+                  <span class="badge-gem">◆</span>
+                </div>
+
+                <div class="fantasy-hero-title-row">
+                  <div class="fantasy-hero-logo-wrap">
+                    <img src="maze_quest_logo.jpg" alt="Maze Quest Official Logo" class="fantasy-hero-logo" width="92" height="92">
+                  </div>
+                  <h2 class="fantasy-hero-title">
+                    <span class="title-line title-enter">ENTER THE</span>
+                    <span class="title-line title-maze">MAZE</span>
+                  </h2>
+                </div>
+
+                <p class="fantasy-hero-subtext">
+                  One labyrinth. Countless paths. One mission to save the world.
+                </p>
+
+                <div class="fantasy-hero-actions">
+                  <button id="btn-enter-world-main" class="fantasy-cta-primary" type="button"
+                    aria-label="Enter the World">
+                    <span class="cta-glow-bg"></span>
+                    <span class="cta-content">
+                      <span class="cta-bracket">[</span>
+                      <span class="cta-text">ENTER THE WORLD</span>
+                      <span class="cta-arrow">→</span>
+                      <span class="cta-bracket">]</span>
+                    </span>
+                  </button>
+
+                  <a href="#section-labyrinth" id="link-explore-labyrinth" class="fantasy-link-secondary">
+                    <span class="link-label">Explore the Labyrinth</span>
+                    <span class="link-arrow">↓</span>
+                  </a>
+                </div>
+
+                <!-- Navigation hints / keystroke guide -->
+                <div class="fantasy-hero-features">
+                  <div class="feature-chip">
+                    <span class="chip-icon">⚡</span>
+                    <span class="chip-text">Real-Time DSA Solvers</span>
+                  </div>
+                  <div class="feature-chip">
+                    <span class="chip-icon">🗺️</span>
+                    <span class="chip-text">15 Campaign Stages</span>
+                  </div>
+                  <div class="feature-chip">
+                    <span class="chip-icon">🎮</span>
+                    <span class="chip-text">Instant Play</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+              <!-- Scroll indicator at bottom of viewport -->
+              <div class="scroll-down-cue" aria-hidden="true">
+                <div class="scroll-mouse">
+                  <div class="scroll-wheel"></div>
+                </div>
+                <span class="scroll-cue-text">SCROLL TO DISCOVER</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- SECTION 2: THE LABYRINTH -->
+          <section id="section-labyrinth" class="fantasy-labyrinth-section" aria-label="The Labyrinth Secrets">
+            <div class="section-container">
+              <div class="section-header-centered">
+                <span class="section-eyebrow">CHRONICLES OF THE ANCIENTS</span>
+                <h3 class="section-quote">“Every path tells a story.”</h3>
+                <p class="section-desc">
+                  Beyond the celestial arch lies a labyrinth forged by arcane geometers.
+                  Its stone walls twist with living algorithms, ancient traps, and relics of power.
+                </p>
+              </div>
+
+              <div class="labyrinth-cards-grid">
+                <!-- Card 1: The Shifting Realm -->
+                <div class="lore-card">
+                  <div class="lore-card-glow"></div>
+                  <div class="lore-card-header">
+                    <span class="lore-icon">🏛️</span>
+                    <span class="lore-tag">PROCEDURAL GEOMETRY</span>
+                  </div>
+                  <h4 class="lore-title">The Shifting Realm</h4>
+                  <p class="lore-body">
+                    Every descent carves a virgin labyrinth. Powered by recursive backtracker, Prim's stonecraft, and
+                    Wilson's uniform spanning trees, no two trials are ever identical.
+                  </p>
+                  <div class="lore-specs">
+                    <span class="spec-pill">Infinite Variances</span>
+                    <span class="spec-pill">Perfect Mazes</span>
+                  </div>
+                </div>
+
+                <!-- Card 2: Ancestral Wayfinders (With Live BFS Radar) -->
+                <div class="lore-card lore-card-featured">
+                  <div class="lore-card-glow"></div>
+                  <div class="lore-card-header">
+                    <span class="lore-icon">🧭</span>
+                    <span class="lore-tag">ANCESTRAL WAYFINDERS</span>
+                  </div>
+                  <h4 class="lore-title">Algorithmic Insight</h4>
+                  <p class="lore-body">
+                    When lost in the gloom, summon the ancient wayfinders: Breadth-First ripples, Depth-First pioneers,
+                    and Dijkstra's weighted navigators illuminate the true exit.
+                  </p>
+                  <div class="radar-preview-container">
+                    <div class="radar-header">
+                      <span class="radar-status-dot"></span>
+                      <span class="radar-label">LIVE RADAR SCOUT</span>
+                    </div>
+                    <canvas id="canvas-hero-preview" width="240" height="240"
+                      aria-label="Live maze solver radar"></canvas>
+                  </div>
+                </div>
+
+                <!-- Card 3: The 15 Realm Trials -->
+                <div class="lore-card">
+                  <div class="lore-card-glow"></div>
+                  <div class="lore-card-header">
+                    <span class="lore-icon">🌌</span>
+                    <span class="lore-tag">CAMPAIGN SAGA</span>
+                  </div>
+                  <h4 class="lore-title">The 15 Realm Trials</h4>
+                  <p class="lore-body">
+                    From the sunlit Meadows of Aethelgard to the Abyssal Core, conquer 5 distinct realms. Master
+                    stamina, recover glowing lanterns, and earn 3-star honors.
+                  </p>
+                  <div class="lore-specs">
+                    <span class="spec-pill">5 Mythic Worlds</span>
+                    <span class="spec-pill">Star Mastery</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Gameplay Controls Strip -->
+              <div class="gameplay-cues-strip">
+                <div class="cue-item">
+                  <span class="cue-icon">⌨️</span>
+                  <div>
+                    <strong>Navigation:</strong> Use <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or Arrow keys to
+                    tread the corridors.
+                  </div>
+                </div>
+                <div class="cue-item">
+                  <span class="cue-icon">⚡</span>
+                  <div>
+                    <strong>Stamina & Relics:</strong> Gather rations 🍞 to replenish energy and oil 🪔 to widen your
+                    lantern radius.
+                  </div>
+                </div>
+                <div class="cue-item">
+                  <span class="cue-icon">🏆</span>
+                  <div>
+                    <strong>The Portal Exit:</strong> Reach the golden rune circle before your torch burns cold.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- SECTION 3: BEGIN YOUR TRIAL -->
+          <section id="section-trial" class="fantasy-trial-section" aria-label="Begin Your Trial">
+            <div class="trial-backdrop" aria-hidden="true"></div>
+            <div class="trial-content-box">
+              <span class="trial-eyebrow">YOUR DESTINY AWAITS</span>
+              <h3 class="trial-heading">BEGIN YOUR TRIAL</h3>
+              <p class="trial-subtext">
+                The runes have aligned. Step through the celestial gateway and claim your place among the realm's
+                legendary navigators.
+              </p>
+
+              <div class="trial-actions">
+                <button id="btn-begin-trial" class="fantasy-cta-primary pulse-glow" type="button">
+                  <span class="cta-glow-bg"></span>
+                  <span class="cta-content">
+                    <span class="cta-bracket">[</span>
+                    <span class="cta-text">ENTER THE WORLD & PLAY</span>
+                    <span class="cta-arrow">→</span>
+                    <span class="cta-bracket">]</span>
+                  </span>
+                </button>
+
+                <button id="btn-open-quest-map" class="fantasy-cta-secondary" type="button">
+                  <span class="cta-content">
+                    <span class="cta-icon">🗺️</span>
+                    <span class="cta-text">WORLD QUEST MAP</span>
+                  </span>
+                </button>
+              </div>
+
+              <div class="trial-status-pills">
+                <span class="status-pill">✦ Instant Maze Generation</span>
+                <span class="status-pill">✦ Instant BFS / DFS Solve</span>
+                <span class="status-pill">✦ Zero Download Required</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- 1. SCREEN: EXPEDITION MODE -->
+      <section id="screen-expedition" class="app-screen">
+        <!-- Sub-view A: Briefing -->
+        <div id="expedition-briefing" class="view-panel">
+          <div class="cartouche-container">
+            <div class="cartouche-frame">
+              <div class="cartouche-reg-mark tl">+</div>
+              <div class="cartouche-reg-mark tr">+</div>
+              <div class="cartouche-reg-mark bl">+</div>
+              <div class="cartouche-reg-mark br">+</div>
+
+              <div class="cartouche-header">
+                <span class="cartouche-tag">MISSION BRIEFING</span>
+                <h2 class="cartouche-title">EXPEDITION BRIEFING</h2>
+                <p class="cartouche-desc">
+                  Select difficulty, manage stamina, and reach the golden exit.
+                </p>
+              </div>
+
+              <!-- Difficulty Presets -->
+              <div class="briefing-section">
+                <span class="section-label">DIFFICULTY PRESET</span>
+                <div class="difficulty-grid">
+                  <button class="diff-btn" data-diff="scn" type="button">
+                    <span class="diff-name">🟢 EASY</span>
+                    <span class="diff-meta">21x21 • Light 6 • 1.5x Stamina</span>
+                  </button>
+                  <button class="diff-btn active" data-diff="srv" type="button">
+                    <span class="diff-name">🟡 MEDIUM</span>
+                    <span class="diff-meta">31x31 • Light 5 • 2 Phantoms</span>
+                  </button>
+                  <button class="diff-btn" data-diff="pth" type="button">
+                    <span class="diff-name">🔴 HARD</span>
+                    <span class="diff-meta">45x45 • Light 4 • 3 Phantoms</span>
+                  </button>
+                  <button class="diff-btn" data-diff="nmr" type="button">
+                    <span class="diff-name">🟣 EXPERT</span>
+                    <span class="diff-meta">61x61 • Light 3 • All 5 Phantoms</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Expedition Code & Daily Option -->
+              <div class="briefing-section">
+                <div class="code-row">
+                  <div class="code-input-wrapper">
+                    <label for="input-expedition-code" class="section-label">EXPEDITION CODE</label>
+                    <input type="text" id="input-expedition-code" class="terminal-input" spellcheck="false"
+                      value="v1/31x31/bkt/7K3Q9M2D/b20/t15/srv">
+                  </div>
+                  <button id="btn-daily" class="btn-action" type="button">DAILY RUN</button>
+                  <button id="btn-new-code" class="btn-action" type="button">RANDOM SEED</button>
+                </div>
+              </div>
+
+              <!-- Briefing Manifest Stats -->
+              <div class="briefing-section">
+                <span class="section-label">EXPEDITION STATS</span>
+                <div class="manifest-grid">
+                  <div class="manifest-card">
+                    <span class="m-label">STAMINA BUDGET</span>
+                    <span id="brief-budget" class="m-val">CALCULATING...</span>
+                  </div>
+                  <div class="manifest-card">
+                    <span class="m-label">LANTERN LIGHT</span>
+                    <span id="brief-radius" class="m-val">5 CELLS</span>
+                  </div>
+                  <div class="manifest-card">
+                    <span class="m-label">EST. RELICS</span>
+                    <span id="brief-relics" class="m-val">8 GEMS</span>
+                  </div>
+                  <div class="manifest-card">
+                    <span class="m-label">PHANTOMS</span>
+                    <span id="brief-phantoms" class="m-val">HOUND, SURVEYOR</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="cartouche-actions">
+                <button id="btn-start-expedition" class="btn-primary-brass pulse-button" type="button">ENTER EXPEDITION
+                  ▶</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub-view B: Active Play HUD & Map -->
+        <div id="expedition-play" class="view-panel" style="display: none;">
+          <!-- Top Simple Play Action Bar -->
+          <div class="simple-play-bar">
+            <!-- Left: Generate Maze & Difficulty Options (15x15) -->
+            <div class="sp-group">
+              <button id="btn-generate-maze" class="btn-primary-brass pulse-button" type="button">🎲 GENERATE
+                MAZE</button>
+              <div class="sp-size-pills">
+                <button class="sp-diff-btn active" data-diff="easy" type="button"
+                  title="15x15 • Easy path with few branches">🟢 EASY</button>
+                <button class="sp-diff-btn" data-diff="medium" type="button"
+                  title="15x15 • More confusing forks & dead ends">🟡 MEDIUM</button>
+                <button class="sp-diff-btn" data-diff="hard" type="button"
+                  title="15x15 • Maximum confusing paths & loops">🔴 HARD</button>
+              </div>
+            </div>
+
+            <!-- Center: Solve & Algorithm Selector -->
+            <div class="sp-group">
+              <button id="btn-solve-maze" class="btn-solve-action" type="button"
+                title="Auto-solve maze with BFS, DFS, or Backtracking">💡 AUTO SOLVE</button>
+              <div class="sp-algo-wrap">
+                <label for="select-solve-algo" class="sp-lbl">ALGO:</label>
+                <select id="select-solve-algo" class="sp-select">
+                  <option value="bfs" selected>🌊 BFS (Shortest)</option>
+                  <option value="dfs">🦔 DFS (Depth-First)</option>
+                  <option value="bkt">⚡ Backtracking</option>
+                </select>
+              </div>
+              <button id="btn-retry-maze" class="btn-hud" type="button">↺ RETRY</button>
+            </div>
+
+            <!-- Right: Status, Steps & Home -->
+            <div class="sp-group right">
+              <div class="sp-stat-pill">
+                <span class="sp-lbl">STEPS</span>
+                <span id="play-steps-counter" class="sp-val">0</span>
+              </div>
+              <button id="btn-back-to-campaign" class="btn-hud" type="button" style="display: none;">🗺️ QUEST
+                MAP</button>
+              <button id="btn-home-from-play" class="btn-hud" type="button">🏠 HOME</button>
+            </div>
+          </div>
+
+          <!-- Center Map Viewport -->
+          <div class="map-viewport">
+            <canvas id="canvas-expedition"></canvas>
+          </div>
+
+          <!-- Maze Victory / Game Completed Modal Overlay -->
+          <div id="maze-victory-overlay" class="maze-victory-overlay" style="display: none;" role="dialog"
+            aria-modal="true" aria-labelledby="victory-modal-title">
+            <canvas id="victory-confetti-canvas" class="victory-confetti-canvas"></canvas>
+            <div class="maze-victory-card">
+              <button id="btn-victory-close" class="victory-close-btn" type="button" aria-label="Close modal"
+                title="Close modal">✕</button>
+
+              <!-- Performance Stars Showcase (1, 2, or 3 Stars based on Steps & Time) -->
+              <div class="victory-stars-area" id="victory-stars-area" aria-label="Performance Stars">
+                <div class="stars-radiance-aura"></div>
+                <div class="stars-podium-row" id="victory-stars-podium">
+                  <div class="v-star-slot slot-left earned" id="v-star-1" data-star="1">
+                    <span class="v-star-glow"></span>
+                    <span class="v-star-glyph">★</span>
+                    <span class="v-star-sparkle">✦</span>
+                  </div>
+                  <div class="v-star-slot slot-center earned" id="v-star-2" data-star="2">
+                    <span class="v-star-glow"></span>
+                    <span class="v-star-glyph">★</span>
+                    <span class="v-star-sparkle">✦</span>
+                  </div>
+                  <div class="v-star-slot slot-right earned" id="v-star-3" data-star="3">
+                    <span class="v-star-glow"></span>
+                    <span class="v-star-glyph">★</span>
+                    <span class="v-star-sparkle">✦</span>
+                  </div>
+                </div>
+              </div>
+
+              <h3 id="victory-modal-title" class="victory-modal-title">VICTORY!</h3>
+              <p id="victory-modal-desc" class="victory-modal-desc">
+                You successfully conquered the maze!
+              </p>
+
+              <div class="victory-metrics-row" id="victory-metrics-row">
+                <div class="v-metric-item" id="v-metric-item-steps">
+                  <span class="v-metric-label" id="victory-stat-steps-label">STEPS</span>
+                  <span id="victory-stat-steps" class="v-metric-val">0</span>
+                </div>
+                <div class="v-metric-item" id="v-metric-item-time" style="display: none;">
+                  <span class="v-metric-label" id="victory-stat-time-label">TIME</span>
+                  <span id="victory-stat-time" class="v-metric-val">0.0ms</span>
+                </div>
+                <div class="v-metric-item" id="v-metric-item-diff">
+                  <span class="v-metric-label" id="victory-stat-diff-label">DIFFICULTY</span>
+                  <span id="victory-stat-diff" class="v-metric-val">MEDIUM</span>
+                </div>
+                <div class="v-metric-item" id="v-metric-item-rating">
+                  <span class="v-metric-label" id="victory-stat-rating-label">STATUS</span>
+                  <span id="victory-stat-rating" class="v-metric-val">GOAL REACHED 🎯</span>
+                </div>
+              </div>
+
+              <div class="victory-actions-row">
+                <button id="btn-victory-new" class="btn-primary-brass pulse-button" type="button">
+                  🎲 NEW MAZE
+                </button>
+                <button id="btn-victory-retry" class="btn-action" type="button">
+                  ↺ REPLAY MAZE
+                </button>
+                <button id="btn-victory-campaign" class="btn-action" type="button" style="display: none;">
+                  🗺️ QUEST MAP
+                </button>
+                <button id="btn-victory-inspect" class="btn-hud" type="button">
+                  👁️ VIEW MAZE
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub-view C: Result Summary & Scoring Ledger -->
+        <div id="expedition-result" class="view-panel" style="display: none;">
+          <div class="cartouche-container">
+            <div class="cartouche-frame result-frame">
+              <div class="cartouche-reg-mark tl">+</div>
+              <div class="cartouche-reg-mark tr">+</div>
+              <div class="cartouche-reg-mark bl">+</div>
+              <div class="cartouche-reg-mark br">+</div>
+
+              <div class="cartouche-header">
+                <span id="result-status-tag" class="cartouche-tag">EXPEDITION COMPLETE</span>
+                <h2 id="result-outcome-title" class="cartouche-title">VICTORY REACHED!</h2>
+              </div>
+
+              <!-- Big Grade Callout & Score -->
+              <div class="result-score-banner">
+                <div class="grade-shield">
+                  <span class="grade-label">GRADE</span>
+                  <span id="result-grade-char" class="grade-char">S</span>
+                </div>
+                <div class="score-points-box">
+                  <span class="score-label">FINAL SCORE</span>
+                  <span id="result-total-score" class="score-number">1,240</span>
+                </div>
+              </div>
+
+              <!-- Score Formula Breakdown Table -->
+              <div class="result-breakdown-card">
+                <span class="card-legend">SCORE BREAKDOWN</span>
+                <table class="ledger-table">
+                  <tbody>
+                    <tr>
+                      <td>Stamina Efficiency (E)</td>
+                      <td id="res-stat-e" class="td-num">1.45</td>
+                    </tr>
+                    <tr>
+                      <td>Time Multiplier (T)</td>
+                      <td id="res-stat-t" class="td-num">1.10</td>
+                    </tr>
+                    <tr>
+                      <td>Exploration Multiplier (X)</td>
+                      <td id="res-stat-x" class="td-num">1.00</td>
+                    </tr>
+                    <tr>
+                      <td>Base Points</td>
+                      <td id="res-stat-base" class="td-num">800</td>
+                    </tr>
+                    <tr>
+                      <td>Combined Multiplier</td>
+                      <td id="res-stat-mult" class="td-num">x 1.6</td>
+                    </tr>
+                    <tr>
+                      <td>Relics Bonus</td>
+                      <td id="res-stat-relics" class="td-num">+ 200</td>
+                    </tr>
+                    <tr>
+                      <td>Phantoms Beaten</td>
+                      <td id="res-stat-phantoms" class="td-num">+ 240</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="cartouche-actions result-actions">
+                <button id="btn-result-replay" class="btn-primary-brass" type="button">REPLAY MAZE ↺</button>
+                <button id="btn-result-new" class="btn-action" type="button">NEW EXPEDITION 🎲</button>
+                <button id="btn-result-campaign" class="btn-action" type="button">QUEST MAP 🗺️</button>
+                <button id="btn-result-export" class="btn-action" type="button">SAVE RUN JSON 💾</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. SCREEN: WORLD QUEST CAMPAIGN -->
+      <section id="screen-campaign" class="app-screen">
+        <div class="campaign-workspace">
+          <!-- Campaign Header Banner -->
+          <div class="campaign-header-card">
+            <div class="camp-title-wrap">
+              <span class="cartouche-tag">PROGRESSION</span>
+              <h2 class="camp-main-title">WORLD QUEST MAP</h2>
+              <p class="camp-desc">Conquer 15 stages across 5 worlds. Earn up to 3 stars per level.</p>
+            </div>
+            <div class="camp-stats-strip">
+              <div class="camp-stat-pill">
+                <span class="pill-lbl">SOLVED</span>
+                <span id="camp-conquered-val" class="pill-val">0 / 15 (0%)</span>
+              </div>
+              <div class="camp-stat-pill">
+                <span class="pill-lbl">STARS</span>
+                <span id="camp-stars-val" class="pill-val">0 ⭐</span>
+              </div>
+              <button id="btn-camp-reset" class="btn-hud" type="button" title="Reset all progress">RESET
+                PROGRESS</button>
+            </div>
+          </div>
+
+          <!-- Dynamic World Island Track -->
+          <div id="campaign-worlds-container" class="campaign-worlds-container">
+            <!-- Dynamically populated via CampaignStore in main.js -->
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+
+</html>
